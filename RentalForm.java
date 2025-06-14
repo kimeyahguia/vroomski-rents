@@ -1,208 +1,354 @@
 
-package BackendVRS;
+package VRSgui;
+import VRSdatabase.DBConnect;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.*;
+import java.sql.*;
+import VRSgui.RentalForm;
+import session.Clientsession;
+import VRSgui.VehiclesUi;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Scanner;
+public class RentalForm extends javax.swing.JFrame {
 
-public class RentalForm {
-    private String formId;
-    private String clientId;
-    private String vehicleId;
-    private String rentalDate;
-    private String returnDate;
-    private double rentalCost;
-    private String rentalStatus;
-
-    // Constructor
-    public RentalForm(String formId, String clientId, String vehicleId, String rentalDate, String returnDate, double rentalCost, String rentalStatus) {
-        this.formId = formId;
-        this.clientId = clientId;
-        this.vehicleId = vehicleId;
-        this.rentalDate = rentalDate;
-        this.returnDate = returnDate;
-        this.rentalCost = rentalCost;
-        this.rentalStatus = rentalStatus;
-    }
-
-    // Method to create a rental form
-    public void createRentalForm(String clientId, String vehicleId, String rentalDate, String returnDate) {
-        this.formId = generateFormId();
-        this.clientId = clientId;
-        this.vehicleId = vehicleId;
-        this.rentalDate = rentalDate;
-        this.returnDate = returnDate;
-        int rentalDays = calculateRentalDays(rentalDate, returnDate);
-        this.rentalCost = calculateRentalCost(vehicleId, rentalDays);
-        this.rentalStatus = "Created";
-        
-        displayFormStep("create");
-    }
-
-    // Method to update a rental form's rental and return dates
-    public void updateRentalForm(String formId, String newRentalDate, String newReturnDate) {
-        if (this.formId.equals(formId) && !"Finalized".equals(this.rentalStatus)) {
-            this.rentalDate = newRentalDate;
-            this.returnDate = newReturnDate;
-            int rentalDays = calculateRentalDays(newRentalDate, newReturnDate);
-            this.rentalCost = calculateRentalCost(vehicleId, rentalDays);
-            displayFormStep("update");
-        } else {
-            System.out.println("Cannot update rental form. Either form ID does not match or rental is already finalized.");
-        }
-    }
-
-    // Method to cancel a rental form
-    public void cancelRentalForm(String formId) {
-        if (this.formId.equals(formId) && !"Finalized".equals(this.rentalStatus)) {
-            this.rentalStatus = "Cancelled";
-            displayFormStep("cancel");
-        } else {
-            System.out.println("Cannot cancel rental form. Either form ID does not match or rental is already finalized.");
-        }
-    }
-
-    // Method to calculate rental cost based on rental days and vehicle rate
-    public double calculateRentalCost(String vehicleId, int rentalDays) {
-        double dailyRate = getDailyRate(vehicleId); // Assume a method to get rate based on vehicle ID
-        return dailyRate * rentalDays;
-    }
-
-    // Switch-based display method for different form actions
-    private void displayFormStep(String action) {
-        switch (action.toLowerCase()) {
-            case "create":
-                System.out.println("Rental Form Created:");
-                System.out.println("Form ID: " + formId);
-                System.out.println("Client ID: " + clientId);
-                System.out.println("Vehicle ID: " + vehicleId);
-                System.out.println("Rental Date: " + rentalDate);
-                System.out.println("Return Date: " + returnDate);
-                System.out.println("Rental Cost: $" + rentalCost);
-                System.out.println("Status: " + rentalStatus);
-                break;
-                
-            case "update":
-                System.out.println("Rental Form Updated:");
-                System.out.println("Form ID: " + formId);
-                System.out.println("New Rental Date: " + rentalDate);
-                System.out.println("New Return Date: " + returnDate);
-                System.out.println("Updated Rental Cost: $" + rentalCost);
-                System.out.println("Status: " + rentalStatus);
-                break;
-                
-            case "cancel":
-                System.out.println("Rental Form Cancelled:");
-                System.out.println("Form ID: " + formId);
-                System.out.println("Status: " + rentalStatus);
-                break;
-                
-            case "finalize":
-                System.out.println("Rental Form Finalized:");
-                System.out.println("Form ID: " + formId);
-                System.out.println("Total Cost: $" + rentalCost);
-                System.out.println("Status: " + rentalStatus);
-                break;
-                
-            default:
-                System.out.println("Unknown action.");
-                break;
-        }
+    
+    public RentalForm() {
+        initComponents();
     }
     
-    public void finalizeRentalForm(String formId) {
-    if (this.formId.equals(formId) && "Created".equals(this.rentalStatus)) {
-        this.rentalStatus = "Finalized";
-        
-        // Prompt user for payment method
-        System.out.println("Select payment method: 1. Credit Card, 2. Cash, 3. Check");
-        Scanner scanner = new Scanner(System.in);
-        int choice = scanner.nextInt();
-        
-        Payment payment;
-        switch (choice) {
-            case 1:
-                payment = new PayCredit(this.formId, this.rentalCost);
-                break;
-            case 2:
-                payment = new PayCash(this.formId, this.rentalCost);
-                break;
-            case 3:
-                payment = new PayCheck(this.formId, this.rentalCost);
-                break;
-            default:
-                System.out.println("Invalid payment method selected.");
-                return;
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        lblLoginadmin = new javax.swing.JLabel();
+        jLabel135 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        txtUsernamelogin = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txtaddresscli = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtcontactnum = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtemailadd = new javax.swing.JTextField();
+        SubmitClientdeets = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+
+        jPanel2.setBackground(new java.awt.Color(0, 51, 102));
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        lblLoginadmin.setFont(new java.awt.Font("Swis721 BlkCn BT", 1, 27)); // NOI18N
+        lblLoginadmin.setForeground(new java.awt.Color(255, 255, 255));
+        lblLoginadmin.setText("RENTAL FORM ");
+
+        jLabel135.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        jLabel135.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel135.setText("VROOMSKI RENTS");
+        jLabel135.setToolTipText("");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblLoginadmin)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel135)))
+                .addGap(53, 53, 53))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel135, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblLoginadmin)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "CLIENT INFORMATION", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Swis721 BlkCn BT", 2, 12))); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        jLabel1.setText("NAME: ");
+
+        txtUsernamelogin.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        txtUsernamelogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtUsernameloginActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        jLabel2.setText("ADDRESS:");
+
+        txtaddresscli.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        txtaddresscli.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtaddresscliActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        jLabel3.setText("CONTACT NUMBER: ");
+
+        txtcontactnum.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        txtcontactnum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtcontactnumActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        jLabel4.setText("EMAIL ADDRESS: ");
+
+        txtemailadd.setFont(new java.awt.Font("Swis721 BlkCn BT", 0, 14)); // NOI18N
+        txtemailadd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtemailaddActionPerformed(evt);
+            }
+        });
+
+        SubmitClientdeets.setBackground(new java.awt.Color(204, 204, 204));
+        SubmitClientdeets.setFont(new java.awt.Font("Swis721 BlkCn BT", 1, 24)); // NOI18N
+        SubmitClientdeets.setText("NEXT");
+        SubmitClientdeets.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SubmitClientdeetsActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap(24, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(txtemailadd, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtcontactnum, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtaddresscli, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtUsernamelogin, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addComponent(SubmitClientdeets, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtUsernamelogin, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtaddresscli, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtcontactnum, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtemailadd, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(SubmitClientdeets, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
+                .addGap(14, 14, 14))
+        );
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(13, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void txtUsernameloginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameloginActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtUsernameloginActionPerformed
+
+    private void txtaddresscliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtaddresscliActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtaddresscliActionPerformed
+
+    private void txtcontactnumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtcontactnumActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtcontactnumActionPerformed
+
+    private void txtemailaddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtemailaddActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtemailaddActionPerformed
+    
+ 
+    private void SubmitClientdeetsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitClientdeetsActionPerformed
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/vehiclerentalsystem", "root", "")) {
+    String clientName = txtUsernamelogin.getText();
+    String clientAdd = txtaddresscli.getText();
+    String clientContact = txtcontactnum.getText();
+    String clientEmail = txtemailadd.getText();
+
+    try {
+        int contact = Integer.parseInt(clientContact);
+
+        int choice = JOptionPane.showConfirmDialog(null,
+                "Confirm Client Details:\n" +
+                "Name: " + clientName + "\n" +
+                "Address: " + clientAdd + "\n" +
+                "Contact: " + contact + "\n" +
+                "Email: " + clientEmail,
+                "Confirm Details", JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            String query = "INSERT INTO `clients details` (`clientName`, `Address`, `ContactNumber`, `Email`) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                pstmt.setString(1, clientName);
+                pstmt.setString(2, clientAdd);
+                pstmt.setInt(3, contact);
+                pstmt.setString(4, clientEmail);
+
+                // Execute the query
+                pstmt.executeUpdate();
+
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int clientID = generatedKeys.getInt(1);  
+                        JOptionPane.showMessageDialog(null, "Client details inserted successfully! Client ID: " + clientID);
+
+                        
+                        Clientsession.getInstance().setClientID(clientID, clientEmail);
+
+                        
+                        int vehicleID = 1;
+
+                        // Pass the clientID to the VehiclesUi constructor
+                        VehiclesUi next = new VehiclesUi(clientID);
+                        next.setVisible(true);
+                        dispose();
+                    }
+                }
+
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error inserting client details: " + e.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Client details insertion canceled.");
         }
-        
-        payment.makePayment();
-        displayFormStep("finalize");
-    } else {
-        System.out.println("Cannot finalize rental form. Either form ID does not match or rental is already cancelled/finalized.");
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(null, "Invalid contact number format!");
     }
+} catch (SQLException e) {
+    JOptionPane.showMessageDialog(null, "Error connecting to the database: " + e.getMessage());
 }
+    }//GEN-LAST:event_SubmitClientdeetsActionPerformed
 
-    // Helper method to generate a unique form ID
-    private String generateFormId() {
-        return "RF-" + System.currentTimeMillis();
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(RentalForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(RentalForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(RentalForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(RentalForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new RentalForm().setVisible(true);
+            }
+        });
     }
 
-    // Helper method to calculate rental days from dates
-    private int calculateRentalDays(String rentalDate, String returnDate) {
-        LocalDate start = LocalDate.parse(rentalDate);
-        LocalDate end = LocalDate.parse(returnDate);
-        return (int) ChronoUnit.DAYS.between(start, end);
-    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton SubmitClientdeets;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel135;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel lblLoginadmin;
+    private javax.swing.JTextField txtUsernamelogin;
+    private javax.swing.JTextField txtaddresscli;
+    private javax.swing.JTextField txtcontactnum;
+    private javax.swing.JTextField txtemailadd;
+    // End of variables declaration//GEN-END:variables
 
-    // Placeholder method to get the daily rate for a vehicle
-    private double getDailyRate(String vehicleId) {
-        return 100.0; // Example daily rate, replace with actual logic
-    }
-
-    String getFormId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
-    
-    // Inner Services class
-    public class Services {
-        private String driverName;
-        private String assistantName;
-        private String carseatType;
-
-        public Services(String driverName, String assistantName, String carseatType) {
-            this.driverName = driverName;
-            this.assistantName = assistantName;
-            this.carseatType = carseatType;
-        }
-
-        // Methods to add services
-        public void addDriver(String driverName) {
-            this.driverName = driverName;
-            System.out.println("Driver added: " + driverName);
-        }
-
-        public void addCarseat(String carseatType) {
-            this.carseatType = carseatType;
-            System.out.println("Carseat added: " + carseatType);
-        }
-
-        public void addRoadAssistant(String assistantName) {
-            this.assistantName = assistantName;
-            System.out.println("Road Assistant added: " + assistantName);
-        }
-
-        // Getter methods for services
-        public String getDriverName() {
-            return driverName;
-        }
-
-        public String getAssistantName() {
-            return assistantName;
-        }
-
-        public String getCarseatType() {
-            return carseatType;
-        }
-    }
 }
